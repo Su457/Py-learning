@@ -27,3 +27,5 @@ print(name[1:-1])#'-1'表示的倒数第一个位置
 
 
 print(course[0:6])
+print(course[::2])#步长为2，表示每隔一个取一个字符
+print(course[::-1])#步长为-1，表示反转字符串
