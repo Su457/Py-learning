@@ -13,7 +13,7 @@
 
 ## 📸 运行预览
 <div align="center">
-  <img src="./Prctures/mm.png" alt="Hello World" width="400">
+  <img src="./Prctures/Hello.png" alt="Hello World" width="400">
   <p><i>一切伟大的算法都始于 "Hello World!"</i></p>
 </div>
 
