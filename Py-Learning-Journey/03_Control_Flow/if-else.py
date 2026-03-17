@@ -5,4 +5,4 @@ if is_hot:
 elif is_cold:
     print("It's a cold day.")
 else:
-    print("It's a lovely day.")  
+    print("It's a lovely day.")
