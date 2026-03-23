@@ -1,9 +1,12 @@
-try:
-    age = int(input('Age:'))
-    income = 2000
-    risk = income / age
-    print(age)
-except ZeroDivisionError:
-    print('age的值不能为0。')
-except ValueError:
-    print('无效值')
+import random
+
+class Dice:
+    def roll(self):
+        frist = random.randint(1,6)
+        second = random.randint(1,6)
+        return frist,second
+
+
+dice = Dice()
+print(dice.roll())
+
