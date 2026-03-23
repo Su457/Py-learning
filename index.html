@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 语法打字训练</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #252526;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 80%;
+            max-width: 800px;
+            text-align: left;
+        }
+        h1 { color: #569cd6; text-align: center; }
+        .word-info { margin-bottom: 20px; }
+        .word { font-size: 32px; color: #4ec9b0; font-weight: bold; margin-bottom: 5px;}
+        .meaning { font-size: 18px; color: #ce9178; margin-bottom: 10px;}
+        .usage { font-size: 16px; color: #9cdcfe; margin-bottom: 20px; line-height: 1.5;}
+        .example-box {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-left: 4px solid #c586c0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border: 2px solid #569cd6;
+            border-radius: 5px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: #4ec9b0; }
+        .status {
+            margin-top: 15px;
+            font-size: 16px;
+            text-align: center;
+            height: 24px;
+        }
+        .success { color: #4ec9b0; font-weight: bold; }
+        .progress { text-align: center; margin-top: 20px; color: #808080; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐍 Python 语法与单词训练</h1>
+    
+    <div class="word-info">
+        <div class="word" id="wordDisplay">Loading...</div>
+        <div class="meaning" id="meaningDisplay"></div>
+        <div class="usage" id="usageDisplay"></div>
+    </div>
+
+    <div><strong>请精确敲击下方代码（注意空格和标点）：</strong></div>
+    <div class="example-box" id="exampleDisplay"></div>
+
+    <input type="text" id="userInput" placeholder="在此处输入上方代码，完全匹配后自动进入下一题..." autocomplete="off" spellcheck="false">
+    
+    <div class="status" id="statusDisplay"></div>
+    <div class="progress" id="progressDisplay"></div>
+</div>
+
+<script>
+    // 词库数据：严格按照提供的文档含义进行标注，并补充了用法与示例
+    const wordsData = [
+        { word: "print", meaning: "打印,输出", usage: "用法：Python中最基本的输出函数，用于将括号内的内容显示在屏幕上。", example: "print('Hello World')" },
+        { word: "True", meaning: "真,正确", usage: "用法：布尔值之一，表示条件成立或逻辑为真。首字母必须大写。", example: "is_valid = True" },
+        { word: "False", meaning: "假的,错误的", usage: "用法：布尔值之一，表示条件不成立或逻辑为假。首字母必须大写。", example: "is_empty = False" },
+        { word: "if", meaning: "如果", usage: "用法：条件控制语句，用于判断一个条件是否成立，成立则执行下方缩进的代码块。", example: "if age > 18:" },
+        { word: "while", meaning: "当...的时候", usage: "用法：循环语句，只要给定条件为真，就会一直重复执行代码块。", example: "while count < 10:" },
+        { word: "for", meaning: "适合于", usage: "用法：循环语句，通常用于遍历序列（如列表、字符串）或可迭代对象中的每一个元素。", example: "for item in list:" },
+        { word: "break", meaning: "中断", usage: "用法：控制流语句，用于立即跳出当前所在的整个循环体。", example: "break" },
+        { word: "continue", meaning: "继续", usage: "用法：控制流语句，用于跳过当前循环的剩余部分，直接进入下一次循环。", example: "continue" },
+        { word: "append", meaning: "附加、添加,贴上", usage: "用法：列表的方法，用于在列表的末尾追加一个新元素。", example: "my_list.append(5)" },
+        { word: "split", meaning: "分割", usage: "用法：字符串的方法，通过指定的分隔符将字符串切分成一个列表。", example: "text.split(',')" },
+        { word: "list", meaning: "列表", usage: "用法：Python中常用的数据结构，用于存储有序的元素集合，用方括号表示。", example: "data = [1, 2, 3]" },
+        { word: "range", meaning: "范围", usage: "用法：内置函数，用于生成一个整数序列，常与 for 循环搭配使用。", example: "for i in range(5):" },
+        { word: "import", meaning: "输入", usage: "用法：用于导入外部模块或包，以便在当前代码中使用它们的功能。", example: "import random" }
+    ];
+
+    let currentIndex = 0;
+    const wordDisplay = document.getElementById('wordDisplay');
+    const meaningDisplay = document.getElementById('meaningDisplay');
+    const usageDisplay = document.getElementById('usageDisplay');
+    const exampleDisplay = document.getElementById('exampleDisplay');
+    const userInput = document.getElementById('userInput');
+    const statusDisplay = document.getElementById('statusDisplay');
+    const progressDisplay = document.getElementById('progressDisplay');
+
+    function loadWord() {
+        if (currentIndex >= wordsData.length) {
+            wordDisplay.innerText = "🎉 恭喜！";
+            meaningDisplay.innerText = "";
+            usageDisplay.innerText = "你已完成当前词库的所有训练。";
+            exampleDisplay.innerText = "Refresh the page to restart.";
+            userInput.disabled = true;
+            statusDisplay.innerText = "";
+            progressDisplay.innerText = "完成度: 100%";
+            return;
+        }
+
+        const currentData = wordsData[currentIndex];
+        wordDisplay.innerText = currentData.word;
+        meaningDisplay.innerText = `[中文含义]: ${currentData.meaning}`;
+        usageDisplay.innerText = currentData.usage;
+        exampleDisplay.innerText = currentData.example;
+        userInput.value = '';
+        statusDisplay.innerText = '';
+        progressDisplay.innerText = `当前进度: ${currentIndex + 1} / ${wordsData.length}`;
+        userInput.focus();
+    }
+
+    userInput.addEventListener('input', () => {
+        const currentData = wordsData[currentIndex];
+        if (userInput.value === currentData.example) {
+            statusDisplay.innerHTML = '<span class="success">✅ 完美匹配！进入下一题...</span>';
+            setTimeout(() => {
+                currentIndex++;
+                loadWord();
+            }, 600); // 停顿0.6秒后进入下一题
+        } else if (currentData.example.startsWith(userInput.value)) {
+            statusDisplay.innerText = "输入中...";
+            statusDisplay.style.color = "#808080";
+        } else {
+            statusDisplay.innerText = "❌ 发现错误，请检查拼写、空格和大小写";
+            statusDisplay.style.color = "#f44336";
+        }
+    });
+
+    // 初始化加载
+    loadWord();
+</script>
+
+</body>
+</html>
